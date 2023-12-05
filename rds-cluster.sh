@@ -2,10 +2,9 @@
 
 # Array com os nomes das instâncias de banco de dados que você deseja etiquetar
 # O rds usa o arn como name, louco ne?
-nomes_rds=("database-2" "database-tags")
+nomes_rds=("database-1")
 conta="266549158321"
-prefix_arn=("arn:aws:rds:us-east-1:$conta:db:")
-
+prefix_arn=("arn:aws:rds:us-east-1:$conta:cluster:")
 
 # Loop para adicionar as tags às instâncias de banco de dados do RDS
 for instancia_rds in "${nomes_rds[@]}"; do
