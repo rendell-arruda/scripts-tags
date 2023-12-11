@@ -1,15 +1,32 @@
 #!/bin/bash
 
-# Array com os IDs das chaves do KMS que você deseja etiquetar
-ids_chaves_kms=("id-chave-kms-1" "id-chave-kms-2" "id-chave-kms-3")
+# Arquivo que contém os IDs das chaves do KMS
+arquivo_ids="ids_chaves.txt"
 
-# Loop para adicionar as tags às chaves do KMS
-for id_chave in "${ids_chaves_kms[@]}"; do
-    output=$(aws kms tag-resource --key-id "$id_chave" --tags TagKey='Produto',TagValue='Test' TagKey='Subproduto',TagValue='IT' 2>&1)
+# Verifica se o arquivo existe
+if [ -f "$arquivo_ids" ]; then
+    # Transforma os IDs em uma lista de strings com aspas duplas separadas por espaço
+    lista_strings=""
+    while IFS= read -r id_chave; do
+        lista_strings+="\"$id_chave\" "
+    done < "$arquivo_ids"
 
-    if [[ $? -eq 0 ]]; then
-        echo "Tags adicionadas à chave do KMS $id_chave"
-    else
-        echo "Falha ao adicionar tags à chave do KMS $id_chave: $output"
-    fi
-done
+    # Remove o espaço em branco extra do final, se houver
+    lista_strings=${lista_strings%" "}
+
+    echo "Lista de strings com aspas duplas:"
+    echo "$lista_strings"
+
+    # Loop para adicionar as tags às chaves do KMS
+    for id_chave in $lista_strings; do
+        output=$(aws kms tag-resource --key-id "$id_chave" --tags TagKey1=ValorTag1 TagKey2=ValorTag2 2>&1)
+
+        if [[ $? -eq 0 ]]; then
+            echo "Tags adicionadas à chave do KMS $id_chave"
+        else
+            echo "Falha ao adicionar tags à chave do KMS $id_chave: $output"
+        fi
+    done
+else
+    echo "O arquivo $arquivo_ids não foi encontrado."
+fi
